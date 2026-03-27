@@ -2,7 +2,7 @@ import pandas as pd
 import sqlite3
 import logging
 
-# Setup logging
+# Logging setup
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 try:
@@ -10,21 +10,26 @@ try:
     logging.info("Reading data...")
     df = pd.read_csv("data/raw/telco.csv")
 
+    # 🔥 Fix column names
+    df.columns = df.columns.str.strip().str.replace(" ", "_")
+
+    logging.info(f"Columns: {df.columns.tolist()}")
     logging.info(f"Initial shape: {df.shape}")
 
     # Step 2: Transform
 
-    # Fix TotalCharges
-    df['TotalCharges'] = pd.to_numeric(df['TotalCharges'], errors='coerce')
+    # Convert numeric columns
+    df['Total_Charges'] = pd.to_numeric(df['Total_Charges'], errors='coerce')
+    df['Monthly_Charges'] = pd.to_numeric(df['Monthly_Charges'], errors='coerce')
 
     # Handle missing values
-    df['TotalCharges'].fillna(df['TotalCharges'].median(), inplace=True)
+    df['Total_Charges'] = df['Total_Charges'].fillna(df['Total_Charges'].median())
 
     # Remove duplicates
     df.drop_duplicates(inplace=True)
 
-    # 🔥 Feature Engineering (IMPORTANT)
-    
+    # 🔥 Feature Engineering
+
     # Tenure Group
     def tenure_group(x):
         if x < 3:
@@ -34,9 +39,9 @@ try:
         else:
             return "12+ Months"
 
-    df['tenure_group'] = df['tenure'].apply(tenure_group)
+    df['tenure_group'] = df['Tenure_Months'].apply(tenure_group)
 
-    # Contract category flag
+    # Contract flag
     df['is_monthly'] = df['Contract'].apply(
         lambda x: 1 if x == "Month-to-month" else 0
     )
