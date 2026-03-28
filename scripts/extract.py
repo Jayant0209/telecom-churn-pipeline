@@ -1,10 +1,12 @@
 import pandas as pd
+import logging
 
 def extract_data(path):
-    df = pd.read_csv(path)
+    logging.info("Extracting data...")
 
-    # Standardize column names
+    df = pd.read_csv(path)
     df.columns = df.columns.str.strip().str.replace(" ", "_")
 
-    print("Data extracted successfully")
+    logging.info(f"Data extracted with shape: {df.shape}")
+
     return df

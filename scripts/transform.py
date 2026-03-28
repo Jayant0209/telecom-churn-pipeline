@@ -1,16 +1,14 @@
 import pandas as pd
-def transform_data(df):
-    
-    # Convert to numeric first
-    df['Total_Charges'] = pd.to_numeric(df['Total_Charges'], errors='coerce')
+import logging
 
-    # Then handle missing values
+def transform_data(df):
+    logging.info("Starting transformation")
+
+    df['Total_Charges'] = pd.to_numeric(df['Total_Charges'], errors='coerce')
     df['Total_Charges'] = df['Total_Charges'].fillna(df['Total_Charges'].median())
 
-    # Remove duplicates
     df.drop_duplicates(inplace=True)
 
-    # Feature Engineering
     def tenure_group(x):
         if x < 3:
             return "0-3 Months"
@@ -25,5 +23,6 @@ def transform_data(df):
         lambda x: 1 if x == "Month-to-month" else 0
     )
 
-    print("Transformation completed")
+    logging.info("Transformation completed")
+
     return df
